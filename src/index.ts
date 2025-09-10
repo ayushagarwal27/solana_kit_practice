@@ -1,6 +1,7 @@
-import { address, generateKeyPair } from "@solana/kit";
+import { address, generateKeyPair, unwrapOption } from "@solana/kit";
 import { createClient } from "./client";
 import { createMint } from "./create-mint";
+import { fetchMint } from "@solana-program/token";
 
 tutorial();
 
@@ -13,7 +14,14 @@ async function tutorial() {
 
   // Create Mint
   const mintAddress = await createMint(client, { decimals: 2 });
+  const mintAccount = await fetchMint(client.rpc, mintAddress);
   console.log("Mint created: ", mintAddress);
+  console.log(`Mint lamports: ${mintAccount.lamports}.`);
+  console.log(
+    `Mint authority: ${unwrapOption(mintAccount.data.mintAuthority)}.`
+  );
+  console.log(`Mint decimals: ${mintAccount.data.decimals}.`);
+  console.log(`Mint supply: ${mintAccount.data.supply}.`);
 
   //   create wallets
   const wallet: CryptoKeyPair = await generateKeyPair();
